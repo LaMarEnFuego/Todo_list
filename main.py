@@ -1,42 +1,61 @@
-# Simple To-Do List Application
+import json
+
 
 def show_menu():
-    print("\nSimple To-Do List")
+    print("\nPlease select from the following menu:\n")
     print("1. Add task")
-    print("2. View tasks")
+    print("2. Show tasks")
     print("3. Delete task")
-    print("4. Exit")
+    print("4. Exit application")
+
+
+def load_tasks():
+    try:
+        with open("saved_tasks.json", "r") as file:
+            tasks = json.load(file)
+    except FileNotFoundError:
+        tasks = []
+    return tasks
+
 
 def add_task(tasks):
-    task = input("Enter the task: ")
-    tasks.append(task)
-    print(f"Task '{task}' added.")
+    new_task = input("\nEnter your task: ")
+    tasks.append(new_task)
+    with open("saved_tasks.json", "w") as file:
+        json.dump(tasks, file)
+    print(f"\nAdded {new_task} to your list.")
+
 
 def view_tasks(tasks):
     if not tasks:
-        print("No tasks in the list.")
+        print("\nThere are no tasks in the list")
     else:
-        print("\nTo-Do List:")
+        print("\nYour To-Do List:")
         for i, task in enumerate(tasks, start=1):
-            print(f"{i}. {task}")
+            print(f"{i}, {task}")
+
 
 def delete_task(tasks):
     if not tasks:
-        print("No tasks to delete.")
-        return
-    view_tasks(tasks)
-    task_num = int(input("Enter the task number to delete: "))
-    if 1 <= task_num <= len(tasks):
-        deleted_task = tasks.pop(task_num - 1)
-        print(f"Task '{deleted_task}' deleted.")
+        print("\nThere are no tasks in the list")
     else:
-        print("Invalid task number.")
+        view_tasks(tasks)
+        target = int(input("\nWhich task number would you like to delete: "))
+        if 1 <= target <= len(tasks):
+            deleted_task = tasks.pop(target - 1)
+            with open("saved_tasks.json", "w") as file:
+                json.dump(tasks, file)
+            print(f"\nTask {deleted_task} deleted.")
+        else:
+            print("Invalid task number")
+
 
 def main():
-    tasks = []
+    print("\nWelcome to a simple To-Do list practice app!")
+    tasks = load_tasks()
     while True:
         show_menu()
-        choice = input("Choose an option: ")
+        choice = input("Your option choice: ")
         if choice == '1':
             add_task(tasks)
         elif choice == '2':
@@ -44,10 +63,11 @@ def main():
         elif choice == '3':
             delete_task(tasks)
         elif choice == '4':
-            print("Exiting the application. Goodbye!")
+            print('Thank you for using my application.  Goodbye!')
             break
         else:
-            print("Invalid choice. Please choose a valid option.")
+            print('\nPlease select a valid option, or press 4 to end.')
+
 
 if __name__ == "__main__":
     main()
